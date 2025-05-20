@@ -1,0 +1,55 @@
+// Basic HTML + JavaScript parlay and EV calculators
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Parlay & EV Calculators</title>
+</head>
+<body>
+  <h2>Parlay Calculator</h2>
+  <label>Enter Decimal Odds (comma separated):</label><br>
+  <input id="parlayOdds"><br><br>
+  <label>Enter Wager Amount ($):</label><br>
+  <input id="stakeAmount" type="number"><br><br>
+  <button onclick="calculateParlay()">Calculate Parlay</button>
+  <p id="parlayResult"></p>
+
+  <hr>
+
+  <h2>EV Calculator</h2>
+  <label>Enter American Odds:</label><br>
+  <input id="evOdds"><br><br>
+  <label>Enter Win Probability (0 - 1):</label><br>
+  <input id="winProb" type="number" step="0.01"><br><br>
+  <button onclick="calculateEV()">Calculate EV</button>
+  <p id="evResult"></p>
+
+  <script>
+    function calculateParlay() {
+      const oddsInput = document.getElementById('parlayOdds').value;
+      const stake = parseFloat(document.getElementById('stakeAmount').value);
+      const oddsArray = oddsInput.split(',').map(Number);
+      let combinedOdds = oddsArray.reduce((acc, val) => acc * val, 1);
+      let payout = combinedOdds * stake;
+      let profit = payout - stake;
+      document.getElementById('parlayResult').innerText =
+        `Combined Odds: ${combinedOdds.toFixed(2)} | Total Payout: $${payout.toFixed(2)} | Profit: $${profit.toFixed(2)}`;
+    }
+
+    function americanToDecimal(odds) {
+      odds = parseFloat(odds);
+      return odds > 0 ? (odds / 100) + 1 : (100 / Math.abs(odds)) + 1;
+    }
+
+    function calculateEV() {
+      const odds = parseFloat(document.getElementById('evOdds').value);
+      const winProb = parseFloat(document.getElementById('winProb').value);
+      const decOdds = americanToDecimal(odds);
+      const ev = (decOdds * winProb - 1) * 100;
+      document.getElementById('evResult').innerText =
+        `Expected Value: ${ev.toFixed(2)}%`;
+    }
+  </script>
+</body>
+</html>
